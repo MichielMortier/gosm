@@ -1,4 +1,4 @@
-module github.com/grab/gosm
+module github.com/MichielMortier/gosm
 
 go 1.16
 
