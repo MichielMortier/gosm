@@ -15,6 +15,9 @@ func deltaEncodeCoordinates(lats, lngs []float64) (granularity int32, latOffset,
 	for _, f := range l {
 		a := int64(f * 1e9)
 		g := int64(1)
+		if a == 0 {
+			continue
+		}
 		for {
 			if a/10*10 == a {
 				g *= 10
