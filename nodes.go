@@ -5,7 +5,7 @@
 package gosm
 
 import (
-	"github.com/grab/gosm/gosmpb"
+	"github.com/MichielMortier/gosm/gosmpb"
 )
 
 // Node is the struct for OSM node.

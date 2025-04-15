@@ -4,7 +4,7 @@
 
 package gosm
 
-import "github.com/grab/gosm/gosmpb"
+import "github.com/MichielMortier/gosm/gosmpb"
 
 // Way is the OSM way struct.
 type Way struct {
