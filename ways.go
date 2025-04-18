@@ -11,6 +11,7 @@ type Way struct {
 	ID      int64
 	Tags    map[string]string
 	NodeIDs []int64
+	Info    *gosmpb.Info
 }
 
 // AppendWays writes OSM way data to buffer.
@@ -34,6 +35,7 @@ func (w *wayMembers) toPrimitiveBlock() (*gosmpb.PrimitiveBlock, error) {
 			Id:   int64ToPointer(w.ID),
 			Keys: keyIDs,
 			Vals: valIDs,
+			Info: w.Info,
 			Refs: deltaEncodeInt64s(w.NodeIDs),
 		})
 	}

@@ -11,7 +11,7 @@ type Relation struct {
 	ID      int64
 	Tags    map[string]string
 	Members []Member
-	Info    gosmpb.Info
+	Info    *gosmpb.Info
 }
 
 // MemberType enum
@@ -66,6 +66,7 @@ func (r *relationMembers) toPrimitiveBlock() (*gosmpb.PrimitiveBlock, error) {
 			RolesSid: roleIDs,
 			Memids:   deltaEncodeInt64s(memberIDs),
 			Types:    memberTypes,
+			Info:     m.Info,
 		}
 		relations = append(relations, relationPb)
 	}

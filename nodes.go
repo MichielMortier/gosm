@@ -14,6 +14,7 @@ type Node struct {
 	Latitude  float64
 	Longitude float64
 	Tags      map[string]string
+	Info      *gosmpb.Info
 }
 
 // AppendNodes will append nodes to the buffer, when it meets the limit(8000 entities or 32MB) it will convert the nodes to dense nodes and write to the writer.
@@ -34,6 +35,8 @@ func (n *nodeMembers) toPrimitiveBlock() (*gosmpb.PrimitiveBlock, error) {
 	lats := make([]float64, len(n.ns))
 	lngs := make([]float64, len(n.ns))
 	ids := make([]int64, len(n.ns))
+	versions := make([]int32, len(n.ns))
+	timestamp := make([]int64, len(n.ns))
 	for i, n := range n.ns {
 		for k, v := range n.Tags {
 			st.add(k)
@@ -43,6 +46,14 @@ func (n *nodeMembers) toPrimitiveBlock() (*gosmpb.PrimitiveBlock, error) {
 		lats[i] = n.Latitude
 		lngs[i] = n.Longitude
 		ids[i] = n.ID
+		if n.Info != nil {
+			if n.Info.Version != nil {
+				versions[i] = *n.Info.Version
+			}
+			if n.Info.Timestamp != nil {
+				timestamp[i] = *n.Info.Timestamp
+			}
+		}
 	}
 	granularity, latOffset, lngOffset, deltaLats, deltaLngs := deltaEncodeCoordinates(lats, lngs)
 	pb := &gosmpb.PrimitiveBlock{
@@ -55,10 +66,11 @@ func (n *nodeMembers) toPrimitiveBlock() (*gosmpb.PrimitiveBlock, error) {
 		Primitivegroup: []*gosmpb.PrimitiveGroup{
 			{
 				Dense: &gosmpb.DenseNodes{
-					Id:       deltaEncodeInt64s(ids),
-					Lat:      deltaEncodeInt64s(deltaLats),
-					Lon:      deltaEncodeInt64s(deltaLngs),
-					KeysVals: st.toKeysVals(),
+					Id:        deltaEncodeInt64s(ids),
+					Lat:       deltaEncodeInt64s(deltaLats),
+					Lon:       deltaEncodeInt64s(deltaLngs),
+					KeysVals:  st.toKeysVals(),
+					Denseinfo: &gosmpb.DenseInfo{Version: versions, Timestamp: timestamp},
 				},
 			},
 		},
